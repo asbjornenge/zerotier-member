@@ -1,14 +1,14 @@
-# ZeroTier Authorize
+# ZeroTier Authorize (Work In Progress)
 
 A small service to authorize a node on a [ZeroTier](https://www.zerotier.com/) network.
 
-It is meant to be used in conjuction with the [zerotier service](https://hub.docker.com/r/zerotier/zerotier-containerized/). 
+It is meant to be used in conjuction with the [zerotier service](https://hub.docker.com/r/zerotier/zerotier-containerized/).   
 I use it to authorize [linuxkit](https://github.com/linuxkit/linuxkit) nodes onto ZT networks :zap::tada:.
 
 ## Use
 
 ```
-docker run -e ZR_ZEROTIER_API_KEY=<key> -d asbjornenge/zerotier-authorize:latest --network 8056c2e21c000001
+docker run -d asbjornenge/zerotier-authorize:latest --network 8056c2e21c000001 --zerotier-api-key=<key>
 ```
 
 The following will pull the latest `asbjornenge/zerotier-authorize` image from the [docker hub]() and run it.
