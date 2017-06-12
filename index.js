@@ -1,4 +1,5 @@
 var fs = require('fs')
+var https = require('https')
 var args = require('minimist')(process.argv.slice(2), {
   default: {
     retry:              process.env['ZA_RETRY']         || 0,
@@ -34,6 +35,41 @@ function readIdentity() {
 // API functions
 var apiResponse;
 var apiError;
-function callApi() {
-// curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" --header 'Authorization: Bearer utdJFjJcNnbKPHHAkrwsAqzU3y74bCjZ' https://my.zerotier.com/api/network/$1/member/$ZERO_ADDRESS -d '{"name":"'$(hostname)'","config":{"authorized":true}}'
+function callApi(identity, network, key, callback) {
+  var options = {
+    hostname: 'my.zerotier.com',
+    port: 443,
+    path: '/api/network/'+network+'/member/'+identity,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer '+key
+    }
+  }
+  var postData = JSON.stringify({
+    config: {
+      authorized: true
+    }
+  })
+
+  console.log(options)
+  var req = http.request(options, function(res) {
+    console.log('STATUS:'+ res.statusCode)
+    console.log('HEADERS:'+ JSON.stringify(res.headers))
+    res.setEncoding('utf8')
+    res.on('data', (chunk) => {
+      console.log('BODY: '+chunk)
+    })
+    res.on('end', () => {
+      console.log('No more data in response.')
+    })
+  })
+
+  req.on('error', (e) => {
+    console.error(`problem with request: ${e.message}`);
+  })
+
+  req.write(postData)
+  req.end()
 }
