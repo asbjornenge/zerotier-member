@@ -8,7 +8,7 @@ I use it to authorize [linuxkit](https://github.com/linuxkit/linuxkit) nodes ont
 ## Use
 
 ```
-docker run -d asbjornenge/zerotier-authorize:latest --network 8056c2e21c000001 --zerotier-api-key=<key>
+docker run -d asbjornenge/zerotier-authorize:latest --network 8056c2e21c000001 --zerotier-api-key <key>
 ```
 
 The following will pull the latest `asbjornenge/zerotier-authorize` image from the [docker hub]() and run it.
@@ -26,6 +26,6 @@ keepalive         - Keep service running (default: false)
 zerotier-home     - ZeroTier config folder (default: /var/lib/zerotier-one)
 ```
 
-Options can be passe either as parameters or as ENV variable (with a ZR\_ prefix; `ZR_ZEROTIER_HOME`).
+Options can be passe either as parameters or as ENV variable (with a ZA\_ prefix; `ZA_ZEROTIER_HOME`).
 
 enjoy. 
