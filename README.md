@@ -8,7 +8,7 @@ I use it to authorize [linuxkit](https://github.com/linuxkit/linuxkit) nodes ont
 ## Use
 
 ```
-docker run -d asbjornenge/zerotier-member:latest --network <network> --zerotier-api-key <key> --data '{ "config": { "authorized": true }}'
+docker run asbjornenge/zerotier-member:latest --data '{ "config": { "authorized": true }}' --network <network> --zerotier-api-key <key> 
 ```
 
 The following will pull the latest `asbjornenge/zerotier-member` image from the [docker hub]() and run it.
