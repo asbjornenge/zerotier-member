@@ -1,6 +1,6 @@
-# ZeroTier Authorize (Work In Progress)
+# ZeroTier Member (Work In Progress)
 
-A small service to authorize a node on a [ZeroTier](https://www.zerotier.com/) network.
+A small service to update member metadata on a [ZeroTier](https://www.zerotier.com/) network.
 
 It is meant to be used in conjuction with the [zerotier service](https://hub.docker.com/r/zerotier/zerotier-containerized/).   
 I use it to authorize [linuxkit](https://github.com/linuxkit/linuxkit) nodes onto ZT networks :zap::tada:.
@@ -8,17 +8,18 @@ I use it to authorize [linuxkit](https://github.com/linuxkit/linuxkit) nodes ont
 ## Use
 
 ```
-docker run -d asbjornenge/zerotier-authorize:latest --network 8056c2e21c000001 --zerotier-api-key <key>
+docker run -d asbjornenge/zerotier-member:latest --network <network> --zerotier-api-key <key> --metadata '{ "config": { "authorized": true }}'
 ```
 
-The following will pull the latest `asbjornenge/zerotier-authorize` image from the [docker hub]() and run it.
-The service will wait for zerotier to generate an `identity`, then attempt to authorize it on all passed networks.
-When connected to all networks, the service will exit (unless `keepalive` is passed). 
+The following will pull the latest `asbjornenge/zerotier-member` image from the [docker hub]() and run it.
+The service will wait for zerotier to generate an `identity`, then attempt to update the member metadata on the passed network.
+If successful, the service will exit (unless `keepalive` is passed). 
 
 ## Options
 
 ```
-network           - Network `id` to connect to (required, can pass multiple)
+metadata          - The metadata to set (required - consult the ZeroTier API for options)
+network           - Network `id` to connect to (required)
 zerotier-api-key  - ZeroTier API key (required)
 retry             - Number of retries before giving up - passing 0 will retry forever (default: 0)
 interval          - Interval between retries (default: 5000)
