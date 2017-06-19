@@ -27,6 +27,6 @@ keepalive         - Keep service running (default: false)
 zerotier-home     - ZeroTier config folder (default: /var/lib/zerotier-one)
 ```
 
-Options can be passe either as parameters or as ENV variable (with a ZA\_ prefix; `ZA_ZEROTIER_HOME`).
+Options can be passe either as parameters or as ENV variable (with a ZM\_ prefix; `ZM_ZEROTIER_HOME`).
 
 enjoy. 

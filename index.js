@@ -2,23 +2,21 @@ var fs = require('fs')
 var https = require('https')
 var args = require('minimist')(process.argv.slice(2), {
   default: {
-    retry:              process.env['ZA_RETRY']         || 0,
-    interval:           process.env['ZA_INTERVAL']      || 5000,
-    keepalive:          process.env['ZA_KEEPALIVE']     || false,
-    'zerotier-home':    process.env['ZA_ZEROTIER_HOME'] || '/var/lib/zerotier-one',
-    network:            process.env['ZA_NETWORK'],
-    'zerotier-api-key': process.env['ZA_ZEROTIER_API_KEY']
+    retry:              process.env['ZM_RETRY']         || 0,
+    interval:           process.env['ZM_INTERVAL']      || 5000,
+    keepalive:          process.env['ZM_KEEPALIVE']     || false,
+    'zerotier-home':    process.env['ZM_ZEROTIER_HOME'] || '/var/lib/zerotier-one',
+    network:            process.env['ZM_NETWORK'],
+    'zerotier-api-key': process.env['ZM_ZEROTIER_API_KEY']
   }
 })
 
+if (!args.data)
+  { console.error('Missing required `data` parameter'); process.exit(1) }
 if (!args.network)
   { console.error('Missing required `network` parameter'); process.exit(1) }
 if (!args['zerotier-api-key'])
   { console.error('Missing required `zerotier-api-key` parameter'), process.exit(1) }
-
-try { args.network = JSON.parse(args.network) } catch(e) {}
-if (typeof args.network !== 'object')
-  args.network = [args.network]
 
 console.log(args)
 
@@ -35,7 +33,7 @@ function readIdentity(callback) {
 // API functions
 var apiResponse;
 var apiError;
-function callApi(identity, network, key, callback) {
+function callApi(identity, network, key, data, callback) {
   var options = {
     hostname: 'my.zerotier.com',
     port: 443,
@@ -47,36 +45,45 @@ function callApi(identity, network, key, callback) {
       'Authorization': 'Bearer '+key
     }
   }
-  var postData = JSON.stringify({
-    config: {
-      authorized: true
-    }
-  })
 
-  console.log(options)
-  var req = http.request(options, function(res) {
-    console.log('STATUS:'+ res.statusCode)
-    console.log('HEADERS:'+ JSON.stringify(res.headers))
+  console.log(options, data, typeof data)
+
+  var body = ''
+  var req = https.request(options, function(res) {
     res.setEncoding('utf8')
-    res.on('data', (chunk) => {
-      console.log('BODY: '+chunk)
+    res.on('data', function(chunk) {
+      body += chunk
     })
-    res.on('end', () => {
-      console.log('No more data in response.')
+    res.on('end', function() {
+      callback(null, res, body)
     })
   })
 
   req.on('error', callback)
-  req.write(postData)
+  req.write(data)
   req.end()
 }
 
+function err(err) {
+  console.error(err)
+  // TODO: Check max retries
+  loop()
+}
+
+function done() {
+  process.exit(0)
+  // TODO: Keepalive
+}
+
 function loop() {
+  console.log('loop called')
   setTimeout(function() {
-    readIdentity(function(err, identity) {
-      if (err) { console.error(err); return loop() }
-      callApi(identity, args.network, args['zerotier-api-key'], function() {
-        
+    readIdentity(function(e, identity) {
+      if (e) return err(e) 
+      callApi(identity, args.network, args['zerotier-api-key'], args.data, function(e, res, body) {
+        if (e) return err(e)
+        if (res.statusCode === 200) return done()
+        err(body)
       })
     })
   }, args.interval)
