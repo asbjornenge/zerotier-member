@@ -23,13 +23,13 @@ if (typeof args.network !== 'object')
 console.log(args)
 
 // Identity functions 
-var identity = ""
-var identityError;
-function readIdentity() {
+function readIdentity(callback) {
   try {
-    var raw = fs.readFileSync(args['zerotier-home']+'/identity.public').toString()
-    return raw.split(':')[0] 
-  } catch(e) { identityError = e}
+    fs.readFile(args['zerotier-home']+'/identity.public', function(err, data) {
+      if (err) return callback(err)
+      callback(null, data.toString().split(':')[0]) 
+    })
+  } catch(e) { callback(e) }
 }
 
 // API functions
@@ -66,10 +66,19 @@ function callApi(identity, network, key, callback) {
     })
   })
 
-  req.on('error', (e) => {
-    console.error(`problem with request: ${e.message}`);
-  })
-
+  req.on('error', callback)
   req.write(postData)
   req.end()
 }
+
+function loop() {
+  setTimeout(function() {
+    readIdentity(function(err, identity) {
+      if (err) { console.error(err); return loop() }
+      callApi(identity, args.network, args['zerotier-api-key'], function() {
+        
+      })
+    })
+  }, args.interval)
+}
+loop()
