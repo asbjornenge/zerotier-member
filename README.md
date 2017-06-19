@@ -1,4 +1,4 @@
-# ZeroTier Member (Work In Progress)
+# ZeroTier Member
 
 A small service to update member data on a [ZeroTier](https://www.zerotier.com/) network.
 
