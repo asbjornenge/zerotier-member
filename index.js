@@ -1,5 +1,6 @@
 var fs = require('fs')
 var https = require('https')
+var pretty = require('prettyjson')
 var args = require('minimist')(process.argv.slice(2), {
   default: {
     retry:              process.env['ZM_RETRY']         || 0,
@@ -18,7 +19,10 @@ if (!args.network)
 if (!args['zerotier-api-key'])
   { console.error('Missing required `zerotier-api-key` parameter'), process.exit(1) }
 
-console.log(args)
+delete args._
+console.log('CLI arguments')
+console.log('===')
+console.log(pretty.render(args))
 
 // Identity functions 
 function readIdentity(callback) {
@@ -46,7 +50,9 @@ function callApi(identity, network, key, data, callback) {
     }
   }
 
-  console.log(options, data, typeof data)
+  console.log('API call #'+retryCounter)
+  console.log('===')
+  console.log(pretty.render(options))
 
   var body = ''
   var req = https.request(options, function(res) {
@@ -64,19 +70,21 @@ function callApi(identity, network, key, data, callback) {
   req.end()
 }
 
+var retryCounter = 0
 function err(err) {
   console.error(err)
-  // TODO: Check max retries
-  loop()
+  if (args.retry === 0 || retryCounter < args.retry) loop()
 }
 
 function done() {
-  process.exit(0)
-  // TODO: Keepalive
+  if (!args.keepalive) process.exit(0)
+  setInterval(function() {
+    console.log('Keepalive...')
+  }, args.interval)
 }
 
 function loop() {
-  console.log('loop called')
+  retryCounter += 1
   setTimeout(function() {
     readIdentity(function(e, identity) {
       if (e) return err(e) 
