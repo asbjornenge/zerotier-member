@@ -29,8 +29,14 @@ zerotier-home     - ZeroTier config folder (default: /var/lib/zerotier-one)
 
 Options can be passe either as parameters or as ENV variable (with a ZM\_ prefix; `ZM_ZEROTIER_HOME`).
 
-## TODO
+## Changelog
 
-* Binary build using `pkg` for tiny Docker image?
+### v1.0.1
+
+* Now using [pkg](https://github.com/zeit/pkg) to build binary and `FROM: alpine` in Dockerfile to dramatically shring size of container (265mb -> 14mb) :tada:
+
+### v1.0.0
+
+* Initial release :tada:
 
 enjoy. 
