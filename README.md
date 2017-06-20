@@ -29,4 +29,8 @@ zerotier-home     - ZeroTier config folder (default: /var/lib/zerotier-one)
 
 Options can be passe either as parameters or as ENV variable (with a ZM\_ prefix; `ZM_ZEROTIER_HOME`).
 
+## TODO
+
+* Binary build using `pkg` for tiny Docker image?
+
 enjoy. 

@@ -1,7 +1,8 @@
-FROM node:6
-WORKDIR /app
-ADD index.js index.js
-ADD yarn.lock yarn.lock
-ADD package.json package.json
-RUN yarn install
-ENTRYPOINT ["node","index.js"]
+FROM alpine:3.5
+RUN apk add --no-cache \
+    g++ \
+    libstdc++ \
+  && apk del --purge \
+    g++
+ADD zerotier-member /zerotier-member
+ENTRYPOINT ["/zerotier-member"]
